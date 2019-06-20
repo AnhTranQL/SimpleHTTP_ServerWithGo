@@ -1,4 +1,4 @@
-package main
+﻿package main
 
 import (
 	"encoding/json"
@@ -15,12 +15,22 @@ type person struct {
 }
 
 func helloGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		return
+	}
 	fmt.Fprintf(w, "GET \n\n")
 	var list []person = make([]person, 10)
+
 	list[0] = person{Id: 123, Name: "Anh", Age: 21}
 	list[1] = person{Id: 124, Name: "Nam", Age: 20}
 	list[2] = person{Id: 125, Name: "Thuong", Age: 19}
 	list[3] = person{Id: 126, Name: "Oanh", Age: 21}
+	// var dat []person
+	// dat, _ := json.Marshal(list)
+	//err := json.Unmarshal(jsonData, &dat)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 	fmt.Fprintf(w, "Xin chao ban %s", list[0].Name)
 }
 
@@ -29,13 +39,16 @@ type dataFjson struct {
 }
 
 func helloPost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		return
+	}
 	fmt.Fprintf(w, "POST \n")
 	var list []person = make([]person, 10)
 	list[0] = person{Id: 123, Name: "Anh", Age: 21}
 	list[1] = person{Id: 124, Name: "Nam", Age: 20}
 	list[2] = person{Id: 125, Name: "Thuong", Age: 19}
 	list[3] = person{Id: 126, Name: "Oanh", Age: 21}
-	fmt.Fprintf(w, "Xin chao ban.\n ")
+	//fmt.Fprintf(w, "Xin chao ban.\n ")
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Printf("Error reading body data: %v", err)
@@ -50,13 +63,18 @@ func helloPost(w http.ResponseWriter, r *http.Request) {
 	if err1 != nil {
 		log.Println(err1)
 	}
-	fmt.Fprintln(w, "\n", dat.Count, " người đầu tiên trong danh sách:")
+	//fmt.Fprintln(w, "\n", dat.Count, " người đầu tiên trong danh sách:")
 	for i := 0; i < dat.Count; i++ {
-		fmt.Fprintf(w, "ID: %d, Name: %s, Age: %d\n", list[i].Id, list[i].Name, list[i].Age)
+		//fmt.Fprintf(w, "ID: %d, Name: %s, Age: %d\n", list[i].Id, list[i].Name, list[i].Age)
+		res2, _ := json.Marshal(list[i])
+		fmt.Fprintln(w, string(res2))
 	}
 }
 
 func helloPut(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "PUT" {
+		return
+	}
 	fmt.Fprintf(w, "PUT\n")
 	var list []person = make([]person, 10)
 	list[0] = person{Id: 123, Name: "Anh", Age: 21}
@@ -64,10 +82,13 @@ func helloPut(w http.ResponseWriter, r *http.Request) {
 	list[2] = person{Id: 125, Name: "Thuong", Age: 19}
 	list[3] = person{Id: 126, Name: "Oanh", Age: 21}
 
-	fmt.Fprintf(w, "Xin chao ban. Du lieu ban dau\n")
+	//fmt.Fprintf(w, "Xin chao ban. Du lieu ban dau\n")
+	fmt.Fprintf(w, "\n")
 	for i := 0; i < len(list); i++ {
 		if (list[i].Id) != 0 {
-			fmt.Fprintf(w, "ID: %d, Name: %s, Age: %d\n", list[i].Id, list[i].Name, list[i].Age)
+			//fmt.Fprintf(w, "ID: %d, Name: %s, Age: %d\n", list[i].Id, list[i].Name, list[i].Age)
+			res2, _ := json.Marshal(list[i])
+			fmt.Fprintln(w, string(res2))
 		}
 	}
 	body, err := ioutil.ReadAll(r.Body)
@@ -95,15 +116,22 @@ func helloPut(w http.ResponseWriter, r *http.Request) {
 		list = append(list, dat)
 	}
 
-	fmt.Fprintf(w, "Du lieu sau khi update\n")
+	//fmt.Fprintf(w, "Du lieu sau khi update\n")
+
+	fmt.Fprintf(w, "\n")
 	for i := 0; i < len(list); i++ {
 		if (list[i].Id) != 0 {
-			fmt.Fprintf(w, "ID: %d, Name: %s, Age: %d\n", list[i].Id, list[i].Name, list[i].Age)
+			//fmt.Fprintf(w, "ID: %d, Name: %s, Age: %d\n", list[i].Id, list[i].Name, list[i].Age)
+			res2, _ := json.Marshal(list[i])
+			fmt.Fprintln(w, string(res2))
 		}
 	}
 }
 
 func helloDelete(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "DELETE" {
+		return
+	}
 	fmt.Fprintf(w, "DELETE \n\n")
 	var list []person = make([]person, 10)
 	list[0] = person{Id: 123, Name: "Anh", Age: 21}
@@ -111,23 +139,27 @@ func helloDelete(w http.ResponseWriter, r *http.Request) {
 	list[2] = person{Id: 125, Name: "Thuong", Age: 19}
 	list[3] = person{Id: 126, Name: "Oanh", Age: 21}
 
-	fmt.Fprintf(w, "Xin chao ban. Du lieu ban dau\n")
+	//fmt.Fprintf(w, "Xin chao ban. Du lieu ban dau\n")
+	fmt.Fprintf(w, "\n")
 	for i := 0; i < len(list); i++ {
 		if (list[i].Id) != 0 {
-			fmt.Fprintf(w, "ID: %d, Name: %s, Age: %d\n", list[i].Id, list[i].Name, list[i].Age)
+			res2, _ := json.Marshal(list[i])
+			fmt.Fprintln(w, string(res2))
 		}
 	}
-	fmt.Fprintf(w, "Xoa du lieu có id = 123 ")
+	//fmt.Fprintf(w, "Xoa du lieu có id = 123 ")
 	for i := 0; i < len(list); i++ {
 		if list[i].Id == 123 {
 			copy(list[i:], list[i+1:])
 			list = list[:len(list)-1]
 		}
 	}
-	fmt.Fprintf(w, "Du lieu sau khi xoa\n")
+	//fmt.Fprintf(w, "Du lieu sau khi xoa\n")
+	fmt.Fprintf(w, "\n")
 	for i := 0; i < len(list); i++ {
 		if (list[i].Id) != 0 {
-			fmt.Fprintf(w, "ID: %d, Name: %s, Age: %d\n", list[i].Id, list[i].Name, list[i].Age)
+			res2, _ := json.Marshal(list[i])
+			fmt.Fprintln(w, string(res2))
 		}
 	}
 }
