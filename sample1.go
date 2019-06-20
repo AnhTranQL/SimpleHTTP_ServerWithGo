@@ -26,7 +26,7 @@ func helloGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var list []person = make([]person, 10)
+	var list []person = make([]person, 4, 10)
 
 	list[0] = person{123, "Anh", 21}
 	list[1] = person{Id: 124, Name: "Nam", Age: 20}
@@ -50,16 +50,15 @@ type dataFjson struct {
 }
 
 func helloPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "[")
+
 	if r.Method != "POST" {
 		m := Message{"404 Not found"}
 		b, _ := json.Marshal(m)
 		fmt.Fprintf(w, string(b))
-		fmt.Fprintf(w, "]")
 		return
 	}
 
-	var list []person = make([]person, 10)
+	var list []person = make([]person, 4, 10)
 	list[0] = person{Id: 123, Name: "Anh", Age: 21}
 	list[1] = person{Id: 124, Name: "Nam", Age: 20}
 	list[2] = person{Id: 125, Name: "Thuong", Age: 19}
@@ -68,7 +67,7 @@ func helloPost(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Printf("Error reading body data: %v", err)
-		http.Error(w, "can't read body", http.StatusBadRequest)
+		http.Error(w, "{'code':'error'}", http.StatusBadRequest)
 		return
 	}
 
@@ -78,12 +77,12 @@ func helloPost(w http.ResponseWriter, r *http.Request) {
 	if err1 != nil {
 		log.Println(err1)
 	}
+	// len(lst) == 0
 	//fmt.Fprintln(w, "\n", dat.Count, " người đầu tiên trong danh sách:")
-	if list[0].Id == 0 {
+	if len(list) == 0 {
 		m := Message{"404 Not found"}
 		b, _ := json.Marshal(m)
 		fmt.Fprintf(w, string(b))
-		fmt.Fprintf(w, "]")
 		return
 	}
 
@@ -91,48 +90,39 @@ func helloPost(w http.ResponseWriter, r *http.Request) {
 		m := Message{"400 Bad request"}
 		b, _ := json.Marshal(m)
 		fmt.Fprintf(w, string(b))
-		fmt.Fprintf(w, "]")
 		return
 	}
-	for i := 0; i < dat.Count; i++ {
-		res2, _ := json.Marshal(list[i])
-		fmt.Fprintln(w, string(res2))
-		if i != dat.Count-1 {
-			fmt.Fprintf(w, ",")
-		}
-	}
 
-	fmt.Fprintf(w, "]")
+	res2, _ := json.Marshal(list[:dat.Count])
+	fmt.Fprintln(w, string(res2))
+
 }
 
 func helloPut(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "[")
+
 	if r.Method != "PUT" {
 		m := Message{"404 Not found"}
 		b, _ := json.Marshal(m)
 		fmt.Fprintf(w, string(b))
-		fmt.Fprintf(w, "]")
 		return
 	}
 
-	var list []person = make([]person, 10)
+	var list []person = make([]person, 4, 10)
 	list[0] = person{Id: 123, Name: "Anh", Age: 21}
 	list[1] = person{Id: 124, Name: "Nam", Age: 20}
 	list[2] = person{Id: 125, Name: "Thuong", Age: 19}
 	list[3] = person{Id: 126, Name: "Oanh", Age: 21}
 
+	var list1Cpy []person = make([]person, 4, 10)
+	list1Cpy = list
 	//Không có dữ liệu trong list
 	if list[0].Id == 0 {
 		m := Message{"404 Not found"}
 		b, _ := json.Marshal(m)
 		fmt.Fprintf(w, string(b))
-		fmt.Fprintf(w, "]")
 		return
 	}
-	fmt.Fprintf(w, "\n")
-	res2, _ := json.Marshal(list)
-	fmt.Fprintln(w, string(res2))
-	fmt.Fprintf(w, "\n")
+
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Printf("Error reading body data: %v", err)
@@ -151,11 +141,9 @@ func helloPut(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < len(list); i++ {
 		if list[i].Id == dat.Id {
 			check = false
-			fmt.Fprintf(w, ",")
 			m := Message{"406 Not Accept. Id have already in system"}
 			b, _ := json.Marshal(m)
 			fmt.Fprintf(w, string(b))
-			fmt.Fprintf(w, "]")
 			return
 		}
 	}
@@ -163,25 +151,23 @@ func helloPut(w http.ResponseWriter, r *http.Request) {
 		list = append(list, dat)
 	}
 
-	//fmt.Fprintf(w, "Du lieu sau khi update\n")
+	var listOfList [][]person = make([][]person, 2, 10)
+	listOfList[0] = list1Cpy
+	listOfList[1] = list
+	res2, _ := json.Marshal(listOfList)
+	fmt.Fprintln(w, string(res2))
 
-	fmt.Fprintf(w, ",")
-	res3, _ := json.Marshal(list)
-	fmt.Fprintln(w, string(res3))
-	fmt.Fprintf(w, "]")
 }
 
 func helloDelete(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "[")
 	if r.Method != "DELETE" {
 		m := Message{"404 Not found"}
 		b, _ := json.Marshal(m)
 		fmt.Fprintf(w, string(b))
-		fmt.Fprintf(w, "]")
 		return
 	}
 
-	var list []person = make([]person, 10)
+	var list []person = make([]person, 4, 10)
 	list[0] = person{Id: 123, Name: "Anh", Age: 21}
 	list[1] = person{Id: 124, Name: "Nam", Age: 20}
 	list[2] = person{Id: 125, Name: "Thuong", Age: 19}
@@ -192,13 +178,13 @@ func helloDelete(w http.ResponseWriter, r *http.Request) {
 		m := Message{"404 Not found"}
 		b, _ := json.Marshal(m)
 		fmt.Fprintf(w, string(b))
-		fmt.Fprintf(w, "]")
 		return
 	}
 
-	res2, _ := json.Marshal(list)
-	fmt.Fprintln(w, string(res2))
-
+	var list1Cpy []person = make([]person, 4, 10)
+	list1Cpy = list
+	res3, _ := json.Marshal(list1Cpy)
+	fmt.Fprintln(w, string(res3))
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Printf("Error reading body data: %v", err)
@@ -223,11 +209,9 @@ func helloDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if check == false {
-		fmt.Fprintf(w, ",")
 		m := Message{"406 Not Accept. Your ID not in system"}
 		b, _ := json.Marshal(m)
 		fmt.Fprintf(w, string(b))
-		fmt.Fprintf(w, "]")
 		return
 	}
 	//fmt.Fprintf(w, "Xoa du lieu có id = 123 ")
@@ -237,12 +221,15 @@ func helloDelete(w http.ResponseWriter, r *http.Request) {
 			list = list[:len(list)-1]
 		}
 	}
-	//fmt.Fprintf(w, "Du lieu sau khi xoa\n")
-	fmt.Fprintf(w, ",")
-	res4, _ := json.Marshal(list)
-	fmt.Fprintln(w, string(res4))
 
-	fmt.Fprintf(w, "]")
+	res4, _ := json.Marshal(list1Cpy)
+	fmt.Fprintln(w, string(res4))
+	var listOfList [][]person = make([][]person, 2, 10)
+	listOfList[0] = list1Cpy
+	listOfList[1] = list
+	res2, _ := json.Marshal(listOfList)
+	fmt.Fprintln(w, string(res2))
+
 }
 
 func main() {
