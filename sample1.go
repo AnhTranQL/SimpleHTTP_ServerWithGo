@@ -181,10 +181,6 @@ func helloDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var list1Cpy []person = make([]person, 4, 10)
-	list1Cpy = list
-	res3, _ := json.Marshal(list1Cpy)
-	fmt.Fprintln(w, string(res3))
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Printf("Error reading body data: %v", err)
@@ -222,12 +218,7 @@ func helloDelete(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	res4, _ := json.Marshal(list1Cpy)
-	fmt.Fprintln(w, string(res4))
-	var listOfList [][]person = make([][]person, 2, 10)
-	listOfList[0] = list1Cpy
-	listOfList[1] = list
-	res2, _ := json.Marshal(listOfList)
+	res2, _ := json.Marshal(list)
 	fmt.Fprintln(w, string(res2))
 
 }
